@@ -1,0 +1,128 @@
+
+$(document).ready(alcargar);
+
+function alcargar()
+{
+	
+	
+	$("#form_cliente").submit(cliente_insertar);
+	$("#form_venta_detalle").submit(ventas_insertar);
+	console.log ("listo");
+	//	$("input").keyup(calcularImporte);
+	$("#form_venta_detalle input").keyup(sumarImportes);
+	$("#acredito").change(activarCredito);
+	$("#pago_acordado").keyup(calculaPagos);
+	
+}
+function activarCredito(){
+	
+	
+	$("#campos_credito").toggle($(this).prop("checked" ));
+	
+	
+	
+}
+function calculaPagos(){
+	var cantidad_pagos=$("#cantidad_pagos").val();
+	var pago_acordado=$("#pago_acordado").val();
+	
+	console.log("pago_acordado",pago_acordado);
+	var saldo=$("#saldo_ventas").val();
+	cantidad_pagos = saldo /pago_acordado;
+		pago_acordado=saldo/cantidad_pagos;
+		$("#cantidad_pagos").val(cantidad_pagos);
+		$("#pago_acordado").val(pago_acordado);
+		
+//	$("#campos_credito").toggle($(this).prop("checked"));
+	
+	console.log("saldo",saldo);
+	console.log("cantidad_pagos",cantidad_pagos);
+	//console.log($(this).prop("checked"));
+}
+function cliente_insertar(){
+	
+	
+	console.log("guardando cliente");
+	$("#sig").prop("disabled", true);// DEshabilita el boton;
+	
+	$.ajax({
+		url : "Consultas/clientes_insertar.php",
+		method: "Post",
+		dataType: "JSON", //La respuesta la interpreta como JSON
+		data: $("#form_cliente").serialize()
+	}).done(termina_cliente_insertar).fail(fallo).always(siempre); 
+	return false;
+	
+}
+function termina_cliente_insertar(respuesta){
+	$("#id_clientes").val(respuesta.id_clientes); //asignar el valor de id_cliente al input 
+	$('.nav-pills a[href="#detalles"]').tab('show');
+	toastr.success('Listo','Datos Guardados');
+	$("#sig").prop("disabled", false);
+	
+}
+
+
+
+function ventas_insertar(){
+	$("#guardar").prop("disabled", true);// DEshabilita el boton;
+	$.ajax({ 
+		url : "Consultas/ventas_insertar.php",
+		method: "Post",
+		dataType:"JSON",
+		data: $("#form_venta_detalle").serialize() + "&" +  $("#form_cliente").serialize()
+	}).done(termina_ventas_insertar).fail(fallo).always(siempre); 	
+	
+	
+	return false;
+	
+}
+
+function termina_ventas_insertar(respuesta){
+	
+	
+	$("#guardar").prop("disabled", false);	
+	
+	toastr.success("Guardado Corectamente");
+	window.location.href="venta_imprimir.php?id_ventas=" + respuesta.id_ventas;
+	
+}
+
+
+
+function fallo(xhr, error,ernum){
+	
+}
+function siempre(respuesta){
+	
+}
+
+function sumarImportes(event){
+	$importeTotal=0;  
+	var ImporteTotal=0;
+	var saldo=0;
+	
+	var anticipo= $(this).closest(".row ").find(".anticipo").val();
+	var importeTotal = $(this).closest(".row ").find(".importeTotal").val();
+	var saldo= importeTotal-anticipo;
+	$(this).closest(".row ").find(".saldo").val(saldo);
+	console.log("saldo: ", saldo);
+	
+	$(".importe").each(calcularImporte);  
+	
+	function calcularImporte(index, element){
+		var precio= $(this).closest(".row ").find(".precio").val();
+		var cantidad= $(this).closest(".row ").find(".cantidad").val();
+		var importe= precio*cantidad;
+		
+		$(this).val(importe);
+		$importeTotal += importe; 
+		console.log("importe:", importe);	
+		$("#importeTotal").val($importeTotal);
+		
+	}
+	
+	
+}
+
+

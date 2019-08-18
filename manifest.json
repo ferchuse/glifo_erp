@@ -1,0 +1,27 @@
+{
+  "short_name": "Glifo App",
+  "name": "Glifo App",
+  "icons": [
+    {
+      "src": "img/icono-1x.png",
+      "type": "image/png",
+      "sizes": "48x48"
+    },
+    {
+      "src": "img/icono-2x.png",
+      "type": "image/png",
+      "sizes": "96x96"
+    },
+    {
+      "src": "img/icono-4x.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ],
+  "start_url": "index.php",
+	"background_color": "#009688",
+	"display": "standalone",
+	"theme_color": "#009688"
+
+
+}
